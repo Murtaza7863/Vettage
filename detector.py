@@ -115,6 +115,26 @@ def logit_to_confidence(llr: np.ndarray | float) -> np.ndarray | float:
     return conf
 
 
+def _llr_from_output(out: np.ndarray) -> np.ndarray:
+    if out.ndim == 2 and out.shape[1] == 1:
+        return out[:, 0]
+    if out.ndim == 2 and out.shape[1] == 2:
+        return out[:, 1] - out[:, 0]
+    return np.reshape(out, (out.shape[0], -1)).mean(axis=1)
+
+
+def _std(xs) -> float:
+    xs = np.asarray(xs, dtype=np.float64)
+    if xs.size < 2:
+        return 0.0
+    return float(np.std(xs, ddof=1))
+
+
+def load_rgb(path: str) -> Image.Image:
+    with Image.open(path) as im:
+        return im.convert("RGB").copy()
+
+
 @torch.no_grad()
 def score_images(
     paths: Iterable[str],
@@ -132,13 +152,7 @@ def score_images(
         if not batch_imgs:
             return
         x = torch.stack(batch_imgs, 0).to(device)
-        out = model(x).cpu().numpy()
-        if out.ndim == 2 and out.shape[1] == 1:
-            llr = out[:, 0]
-        elif out.ndim == 2 and out.shape[1] == 2:
-            llr = out[:, 1] - out[:, 0]
-        else:
-            llr = np.reshape(out, (out.shape[0], -1)).mean(axis=1)
+        llr = _llr_from_output(model(x).cpu().numpy())
         for p, score in zip(batch_paths, llr):
             rows.append(
                 {
@@ -151,8 +165,7 @@ def score_images(
         batch_paths.clear()
 
     for path in path_list:
-        img = Image.open(path).convert("RGB")
-        batch_imgs.append(transform(img))
+        batch_imgs.append(transform(load_rgb(path)))
         batch_paths.append(path)
         if len(batch_imgs) >= batch_size:
             flush()
@@ -173,14 +186,78 @@ def score_pil_images(
     for i in range(0, len(images), batch_size):
         chunk = images[i : i + batch_size]
         x = torch.stack([transform(im.convert("RGB")) for im in chunk], 0).to(device)
-        out = model(x).cpu().numpy()
-        if out.ndim == 2 and out.shape[1] == 1:
-            llr = out[:, 0]
-        elif out.ndim == 2 and out.shape[1] == 2:
-            llr = out[:, 1] - out[:, 0]
-        else:
-            llr = np.reshape(out, (out.shape[0], -1)).mean(axis=1)
-        llrs.append(llr)
+        llrs.append(_llr_from_output(model(x).cpu().numpy()))
     if not llrs:
         return np.array([], dtype=np.float32)
     return logit_to_confidence(np.concatenate(llrs, axis=0))
+
+
+@torch.no_grad()
+def score_images_repeated(
+    paths: Iterable[str],
+    model,
+    transform,
+    device: torch.device,
+    n_repeats: int = 5,
+) -> list[dict]:
+    """Score each image n_repeats times (reload from disk each pass).
+
+    `pred` is the mean confidence so the required JSON contract still holds.
+    Extra keys record per-repeat drift.
+    """
+    if n_repeats < 1:
+        raise ValueError("n_repeats must be >= 1")
+    rows: list[dict] = []
+    model.eval()
+    for path in paths:
+        preds: list[float] = []
+        llrs: list[float] = []
+        for _ in range(n_repeats):
+            x = transform(load_rgb(path)).unsqueeze(0).to(device)
+            llr = float(_llr_from_output(model(x).cpu().numpy())[0])
+            llrs.append(llr)
+            preds.append(float(logit_to_confidence(llr)))
+        mean_pred = float(np.mean(preds))
+        rows.append(
+            {
+                "image_path": path,
+                "pred": mean_pred,
+                "pred_mean": mean_pred,
+                "pred_std": _std(preds),
+                "pred_min": float(np.min(preds)),
+                "pred_max": float(np.max(preds)),
+                "pred_range": float(np.max(preds) - np.min(preds)),
+                "n_repeats": n_repeats,
+                "repeats": preds,
+                "llr_mean": float(np.mean(llrs)),
+                "llr_repeats": llrs,
+            }
+        )
+    return rows
+
+
+def aggregate_predictions(rows: list[dict], threshold: float = 0.5) -> dict:
+    """Folder-level summary. `pred` on each row is already the per-image mean."""
+    if not rows:
+        return {"n_images": 0, "threshold": threshold}
+    preds = np.array([r["pred"] for r in rows], dtype=np.float64)
+    within = np.array([float(r.get("pred_std") or 0.0) for r in rows], dtype=np.float64)
+    n_repeats = int(rows[0].get("n_repeats") or 1)
+    synthetic = preds > threshold
+    return {
+        "n_images": len(rows),
+        "n_repeats": n_repeats,
+        "threshold": threshold,
+        "mean_pred": float(np.mean(preds)),
+        "std_pred": _std(preds),
+        "median_pred": float(np.median(preds)),
+        "min_pred": float(np.min(preds)),
+        "max_pred": float(np.max(preds)),
+        "n_synthetic": int(np.sum(synthetic)),
+        "n_real": int(np.sum(~synthetic)),
+        "frac_synthetic": float(np.mean(synthetic)),
+        "mean_within_image_std": float(np.mean(within)),
+        "max_within_image_std": float(np.max(within)),
+        "max_within_image_range": float(max(float(r.get("pred_range") or 0.0) for r in rows)),
+        "stable": bool(np.max(within) < 1e-6),
+    }

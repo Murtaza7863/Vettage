@@ -1,0 +1,245 @@
+{
+  "aggregate": {
+    "n_images": 6,
+    "n_repeats": 5,
+    "threshold": 0.5,
+    "mean_pred": 0.47230976447463036,
+    "std_pred": 0.26620685277542133,
+    "median_pred": 0.48612256348133087,
+    "min_pred": 0.09790460020303726,
+    "max_pred": 0.780597448348999,
+    "n_synthetic": 3,
+    "n_real": 3,
+    "frac_synthetic": 0.5,
+    "mean_within_image_std": 0.0,
+    "max_within_image_std": 0.0,
+    "max_within_image_range": 0.0,
+    "stable": true,
+    "transform_probe": [
+      {
+        "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/checker.jpg",
+        "clean": 0.5173509120941162,
+        "max_abs_delta": 0.24115604162216187,
+        "scores": {
+          "clean|none": 0.5173509120941162,
+          "jpeg|quality=90": 0.5173509120941162,
+          "jpeg|quality=70": 0.5161208510398865,
+          "jpeg|quality=50": 0.5173509120941162,
+          "jpeg|quality=30": 0.467053085565567,
+          "gaussian_blur|sigma=0.5": 0.7585069537162781,
+          "gaussian_blur|sigma=1.0": 0.7202926874160767,
+          "gaussian_blur|sigma=2.0": 0.6604636311531067,
+          "resize|scale=0.5x then upscale": 0.7304452061653137,
+          "resize|scale=0.25x then upscale": 0.5829532742500305,
+          "gaussian_noise|sigma=0.02": 0.4876497685909271,
+          "gaussian_noise|sigma=0.05": 0.3295149505138397,
+          "gaussian_noise|sigma=0.1": 0.29259228706359863,
+          "color_jitter|b/c/s \u00b120%": 0.3277999460697174,
+          "center_crop|crop to 80%": 0.5387359261512756
+        }
+      },
+      {
+        "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/gradient.png",
+        "clean": 0.780597448348999,
+        "max_abs_delta": 0.23685920238494873,
+        "scores": {
+          "clean|none": 0.780597448348999,
+          "jpeg|quality=90": 0.8229255080223083,
+          "jpeg|quality=70": 0.6798054575920105,
+          "jpeg|quality=50": 0.5917937755584717,
+          "jpeg|quality=30": 0.5437382459640503,
+          "gaussian_blur|sigma=0.5": 0.780597448348999,
+          "gaussian_blur|sigma=1.0": 0.780597448348999,
+          "gaussian_blur|sigma=2.0": 0.780597448348999,
+          "resize|scale=0.5x then upscale": 0.7894542217254639,
+          "resize|scale=0.25x then upscale": 0.8483361005783081,
+          "gaussian_noise|sigma=0.02": 0.6690673828125,
+          "gaussian_noise|sigma=0.05": 0.5925005674362183,
+          "gaussian_noise|sigma=0.1": 0.6157780289649963,
+          "color_jitter|b/c/s \u00b120%": 0.8523282408714294,
+          "center_crop|crop to 80%": 0.8118054270744324
+        }
+      },
+      {
+        "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/noise_texture.jpg",
+        "clean": 0.45489421486854553,
+        "max_abs_delta": 0.3051033318042755,
+        "scores": {
+          "clean|none": 0.45489421486854553,
+          "jpeg|quality=90": 0.4356074631214142,
+          "jpeg|quality=70": 0.14979088306427002,
+          "jpeg|quality=50": 0.31505778431892395,
+          "jpeg|quality=30": 0.22293703258037567,
+          "gaussian_blur|sigma=0.5": 0.5145986080169678,
+          "gaussian_blur|sigma=1.0": 0.650185763835907,
+          "gaussian_blur|sigma=2.0": 0.7156784534454346,
+          "resize|scale=0.5x then upscale": 0.7253054976463318,
+          "resize|scale=0.25x then upscale": 0.5285930037498474,
+          "gaussian_noise|sigma=0.02": 0.4626009166240692,
+          "gaussian_noise|sigma=0.05": 0.46093621850013733,
+          "gaussian_noise|sigma=0.1": 0.4472385346889496,
+          "color_jitter|b/c/s \u00b120%": 0.438315749168396,
+          "center_crop|crop to 80%": 0.5936242938041687
+        }
+      },
+      {
+        "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/real_cat.jpg",
+        "clean": 0.25068530440330505,
+        "max_abs_delta": 0.5102774202823639,
+        "scores": {
+          "clean|none": 0.25068530440330505,
+          "jpeg|quality=90": 0.3392511010169983,
+          "jpeg|quality=70": 0.21624600887298584,
+          "jpeg|quality=50": 0.35339054465293884,
+          "jpeg|quality=30": 0.38407254219055176,
+          "gaussian_blur|sigma=0.5": 0.3439895510673523,
+          "gaussian_blur|sigma=1.0": 0.6348322033882141,
+          "gaussian_blur|sigma=2.0": 0.760962724685669,
+          "resize|scale=0.5x then upscale": 0.5958426594734192,
+          "resize|scale=0.25x then upscale": 0.7499209046363831,
+          "gaussian_noise|sigma=0.02": 0.631889820098877,
+          "gaussian_noise|sigma=0.05": 0.4032685160636902,
+          "gaussian_noise|sigma=0.1": 0.5511096715927124,
+          "color_jitter|b/c/s \u00b120%": 0.34218838810920715,
+          "center_crop|crop to 80%": 0.254282146692276
+        }
+      },
+      {
+        "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/real_landscape.jpg",
+        "clean": 0.09790460020303726,
+        "max_abs_delta": 0.6924481615424156,
+        "scores": {
+          "clean|none": 0.09790460020303726,
+          "jpeg|quality=90": 0.16224981844425201,
+          "jpeg|quality=70": 0.11152541637420654,
+          "jpeg|quality=50": 0.13665634393692017,
+          "jpeg|quality=30": 0.12870565056800842,
+          "gaussian_blur|sigma=0.5": 0.4347851872444153,
+          "gaussian_blur|sigma=1.0": 0.7473064661026001,
+          "gaussian_blur|sigma=2.0": 0.7903527617454529,
+          "resize|scale=0.5x then upscale": 0.6489735841751099,
+          "resize|scale=0.25x then upscale": 0.6616820693016052,
+          "gaussian_noise|sigma=0.02": 0.70994633436203,
+          "gaussian_noise|sigma=0.05": 0.49208682775497437,
+          "gaussian_noise|sigma=0.1": 0.5519765019416809,
+          "color_jitter|b/c/s \u00b120%": 0.6265683770179749,
+          "center_crop|crop to 80%": 0.38477402925491333
+        }
+      },
+      {
+        "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/synth_rings.png",
+        "clean": 0.732426106929779,
+        "max_abs_delta": 0.2331809401512146,
+        "scores": {
+          "clean|none": 0.732426106929779,
+          "jpeg|quality=90": 0.8202235102653503,
+          "jpeg|quality=70": 0.6946441531181335,
+          "jpeg|quality=50": 0.6816703677177429,
+          "jpeg|quality=30": 0.7602275609970093,
+          "gaussian_blur|sigma=0.5": 0.8066174983978271,
+          "gaussian_blur|sigma=1.0": 0.949852466583252,
+          "gaussian_blur|sigma=2.0": 0.9527214765548706,
+          "resize|scale=0.5x then upscale": 0.9656070470809937,
+          "resize|scale=0.25x then upscale": 0.9608286619186401,
+          "gaussian_noise|sigma=0.02": 0.6297338604927063,
+          "gaussian_noise|sigma=0.05": 0.6381403803825378,
+          "gaussian_noise|sigma=0.1": 0.6265872120857239,
+          "color_jitter|b/c/s \u00b120%": 0.7348331809043884,
+          "center_crop|crop to 80%": 0.8145383596420288
+        }
+      }
+    ]
+  },
+  "predictions": [
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/checker.jpg",
+      "pred": 0.5173509120941162,
+      "pred_std": 0.0,
+      "pred_min": 0.5173509120941162,
+      "pred_max": 0.5173509120941162,
+      "n_repeats": 5,
+      "repeats": [
+        0.5173509120941162,
+        0.5173509120941162,
+        0.5173509120941162,
+        0.5173509120941162,
+        0.5173509120941162
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/gradient.png",
+      "pred": 0.780597448348999,
+      "pred_std": 0.0,
+      "pred_min": 0.780597448348999,
+      "pred_max": 0.780597448348999,
+      "n_repeats": 5,
+      "repeats": [
+        0.780597448348999,
+        0.780597448348999,
+        0.780597448348999,
+        0.780597448348999,
+        0.780597448348999
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/noise_texture.jpg",
+      "pred": 0.45489421486854553,
+      "pred_std": 0.0,
+      "pred_min": 0.45489421486854553,
+      "pred_max": 0.45489421486854553,
+      "n_repeats": 5,
+      "repeats": [
+        0.45489421486854553,
+        0.45489421486854553,
+        0.45489421486854553,
+        0.45489421486854553,
+        0.45489421486854553
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/real_cat.jpg",
+      "pred": 0.25068530440330505,
+      "pred_std": 0.0,
+      "pred_min": 0.25068530440330505,
+      "pred_max": 0.25068530440330505,
+      "n_repeats": 5,
+      "repeats": [
+        0.25068530440330505,
+        0.25068530440330505,
+        0.25068530440330505,
+        0.25068530440330505,
+        0.25068530440330505
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/real_landscape.jpg",
+      "pred": 0.09790460020303726,
+      "pred_std": 0.0,
+      "pred_min": 0.09790460020303726,
+      "pred_max": 0.09790460020303726,
+      "n_repeats": 5,
+      "repeats": [
+        0.09790460020303726,
+        0.09790460020303726,
+        0.09790460020303726,
+        0.09790460020303726,
+        0.09790460020303726
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/synth_rings.png",
+      "pred": 0.732426106929779,
+      "pred_std": 0.0,
+      "pred_min": 0.732426106929779,
+      "pred_max": 0.732426106929779,
+      "n_repeats": 5,
+      "repeats": [
+        0.732426106929779,
+        0.732426106929779,
+        0.732426106929779,
+        0.732426106929779,
+        0.732426106929779
+      ]
+    }
+  ]
+}

@@ -174,6 +174,7 @@ hf_cache/
 # Keep committed evaluation artifacts; ignore ad-hoc dumps
 results/*.tmp
 results/error_examples/
+test_images/
 *.pt
 !weights/**/*.pth
 

@@ -1,0 +1,111 @@
+{
+  "aggregate": {
+    "n_images": 6,
+    "n_repeats": 5,
+    "threshold": 0.5,
+    "mean_pred": 0.19623242194453874,
+    "std_pred": 0.16726140957594093,
+    "median_pred": 0.16492093354463577,
+    "min_pred": 0.048393022269010544,
+    "max_pred": 0.4443088173866272,
+    "n_synthetic": 0,
+    "n_real": 6,
+    "frac_synthetic": 0.0,
+    "mean_within_image_std": 0.0,
+    "max_within_image_std": 0.0,
+    "max_within_image_range": 0.0,
+    "stable": true
+  },
+  "predictions": [
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/test_images/sid/fake_full_synthetic_013649.jpg",
+      "pred": 0.30220967531204224,
+      "pred_std": 0.0,
+      "pred_min": 0.30220967531204224,
+      "pred_max": 0.30220967531204224,
+      "n_repeats": 5,
+      "repeats": [
+        0.30220967531204224,
+        0.30220967531204224,
+        0.30220967531204224,
+        0.30220967531204224,
+        0.30220967531204224
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/test_images/sid/fake_full_synthetic_021252.jpg",
+      "pred": 0.05844779312610626,
+      "pred_std": 0.0,
+      "pred_min": 0.05844779312610626,
+      "pred_max": 0.05844779312610626,
+      "n_repeats": 5,
+      "repeats": [
+        0.05844779312610626,
+        0.05844779312610626,
+        0.05844779312610626,
+        0.05844779312610626,
+        0.05844779312610626
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/test_images/sid/fake_full_synthetic_063409.jpg",
+      "pred": 0.4443088173866272,
+      "pred_std": 0.0,
+      "pred_min": 0.4443088173866272,
+      "pred_max": 0.4443088173866272,
+      "n_repeats": 5,
+      "repeats": [
+        0.4443088173866272,
+        0.4443088173866272,
+        0.4443088173866272,
+        0.4443088173866272,
+        0.4443088173866272
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/test_images/sid/real_0c3bf807bf45ed75.jpg",
+      "pred": 0.05264114961028099,
+      "pred_std": 0.0,
+      "pred_min": 0.05264114961028099,
+      "pred_max": 0.05264114961028099,
+      "n_repeats": 5,
+      "repeats": [
+        0.05264114961028099,
+        0.05264114961028099,
+        0.05264114961028099,
+        0.05264114961028099,
+        0.05264114961028099
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/test_images/sid/real_80aebe6f83612c1c.jpg",
+      "pred": 0.048393022269010544,
+      "pred_std": 0.0,
+      "pred_min": 0.048393022269010544,
+      "pred_max": 0.048393022269010544,
+      "n_repeats": 5,
+      "repeats": [
+        0.048393022269010544,
+        0.048393022269010544,
+        0.048393022269010544,
+        0.048393022269010544,
+        0.048393022269010544
+      ]
+    },
+    {
+      "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/test_images/sid/real_a9ae16f2a7796217.jpg",
+      "pred": 0.2713940739631653,
+      "pred_std": 0.0,
+      "pred_min": 0.2713940739631653,
+      "pred_max": 0.2713940739631653,
+      "n_repeats": 5,
+      "repeats": [
+        0.2713940739631653,
+        0.2713940739631653,
+        0.2713940739631653,
+        0.2713940739631653,
+        0.2713940739631653
+      ]
+    }
+  ]
+}

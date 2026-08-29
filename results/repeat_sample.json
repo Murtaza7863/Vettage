@@ -1,0 +1,92 @@
+[
+  {
+    "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/checker.jpg",
+    "pred": 0.5173509120941162,
+    "pred_std": 0.0,
+    "pred_min": 0.5173509120941162,
+    "pred_max": 0.5173509120941162,
+    "n_repeats": 5,
+    "repeats": [
+      0.5173509120941162,
+      0.5173509120941162,
+      0.5173509120941162,
+      0.5173509120941162,
+      0.5173509120941162
+    ]
+  },
+  {
+    "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/gradient.png",
+    "pred": 0.780597448348999,
+    "pred_std": 0.0,
+    "pred_min": 0.780597448348999,
+    "pred_max": 0.780597448348999,
+    "n_repeats": 5,
+    "repeats": [
+      0.780597448348999,
+      0.780597448348999,
+      0.780597448348999,
+      0.780597448348999,
+      0.780597448348999
+    ]
+  },
+  {
+    "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/noise_texture.jpg",
+    "pred": 0.45489421486854553,
+    "pred_std": 0.0,
+    "pred_min": 0.45489421486854553,
+    "pred_max": 0.45489421486854553,
+    "n_repeats": 5,
+    "repeats": [
+      0.45489421486854553,
+      0.45489421486854553,
+      0.45489421486854553,
+      0.45489421486854553,
+      0.45489421486854553
+    ]
+  },
+  {
+    "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/real_cat.jpg",
+    "pred": 0.25068530440330505,
+    "pred_std": 0.0,
+    "pred_min": 0.25068530440330505,
+    "pred_max": 0.25068530440330505,
+    "n_repeats": 5,
+    "repeats": [
+      0.25068530440330505,
+      0.25068530440330505,
+      0.25068530440330505,
+      0.25068530440330505,
+      0.25068530440330505
+    ]
+  },
+  {
+    "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/real_landscape.jpg",
+    "pred": 0.09790460020303726,
+    "pred_std": 0.0,
+    "pred_min": 0.09790460020303726,
+    "pred_max": 0.09790460020303726,
+    "n_repeats": 5,
+    "repeats": [
+      0.09790460020303726,
+      0.09790460020303726,
+      0.09790460020303726,
+      0.09790460020303726,
+      0.09790460020303726
+    ]
+  },
+  {
+    "image_path": "/Users/murtazakuvawala/Documents/CS/Vettage/sample_images/synth_rings.png",
+    "pred": 0.732426106929779,
+    "pred_std": 0.0,
+    "pred_min": 0.732426106929779,
+    "pred_max": 0.732426106929779,
+    "n_repeats": 5,
+    "repeats": [
+      0.732426106929779,
+      0.732426106929779,
+      0.732426106929779,
+      0.732426106929779,
+      0.732426106929779
+    ]
+  }
+]
