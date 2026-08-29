@@ -1,0 +1,7 @@
+filename,clipdet_latent10k_plus,fusion
+sample_images/checker.jpg,0.069431454,0.06943154
+sample_images/gradient.png,1.2691517,1.2691518
+sample_images/noise_texture.jpg,-0.18091479,-0.18091488
+sample_images/real_cat.jpg,-1.0949606,-1.0949606
+sample_images/real_landscape.jpg,-2.2207267,-2.2207267
+sample_images/synth_rings.png,1.0069666,1.0069665

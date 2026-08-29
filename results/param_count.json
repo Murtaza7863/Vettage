@@ -1,0 +1,13 @@
+{
+  "registered_nn_module": 1025,
+  "clip_full_backbone": 426830081,
+  "clip_vision_encoder": 303179776,
+  "clip_text_encoder": 85054464,
+  "classifier_head": 1025,
+  "inference_vision_plus_head": 303180801,
+  "loaded_module_total": 426831106,
+  "under_2b": true,
+  "arch": "opencliplinearnext_clipL14commonpool",
+  "model_name": "clipdet_latent10k_plus",
+  "device_used_for_count": "cpu"
+}

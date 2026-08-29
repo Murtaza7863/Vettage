@@ -1,0 +1,14 @@
+torch>=2.2
+torchvision>=0.17
+tqdm
+scikit-learn
+pillow
+pyyaml
+pandas
+timm>=0.9.10
+huggingface-hub>=0.23.0
+open_clip_torch
+datasets
+peft
+matplotlib
+kagglehub

@@ -159,3 +159,21 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 .git-credentials
+
+# Local data, caches, training artifacts
+data/raw/
+data/processed/
+data/sid_set/
+data/cifake/
+data/wildfake/
+checkpoints/
+runs/
+.cache/
+hf_cache/
+
+# Keep committed evaluation artifacts; ignore ad-hoc dumps
+results/*.tmp
+results/error_examples/
+*.pt
+!weights/**/*.pth
+
