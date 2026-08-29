@@ -1,0 +1,19 @@
+{
+  "n_train": 8097,
+  "n_val": 900,
+  "train_real": 4050,
+  "train_fake": 4047,
+  "val_real": 450,
+  "val_fake": 450,
+  "sources": [
+    "cifake",
+    "sid_set"
+  ],
+  "excluded": [
+    "SID_Set official validation/test",
+    "WildFake / COCO val2017 demo split from the problem statement"
+  ],
+  "sid_hf": "saberzl/SID_Set",
+  "cifake_hf": "dragonintelligence/CIFAKE-image-dataset",
+  "cifake_kaggle": "birdy654/cifake-real-and-ai-generated-synthetic-images"
+}
