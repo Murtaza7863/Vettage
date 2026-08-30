@@ -1,0 +1,24 @@
+{
+  "threshold": 0.5,
+  "val": "data/processed/val.csv (native resolution, not cache256)",
+  "baseline": {
+    "file": "results/success_rate.json",
+    "overall": {"acc": 0.5275, "auc": 0.6657, "fake_ok": 0.2375, "real_ok": 0.8175},
+    "sid_set": {"acc": 0.617, "auc": 0.8592, "fake_ok": 0.262, "real_ok": 0.972},
+    "cifake": {"acc": 0.3783, "auc": 0.3150, "fake_ok": 0.1967, "real_ok": 0.56}
+  },
+  "lora_sid": {
+    "file": "results/success_lora.json",
+    "overall": {"acc": 0.839, "auc": 0.949, "fake_ok": 0.704, "real_ok": 0.974},
+    "sid_set": {"acc": 0.999, "auc": 1.0, "fake_ok": 1.0, "real_ok": 0.998},
+    "cifake": {"acc": 0.572, "auc": 0.656, "fake_ok": 0.210, "real_ok": 0.933}
+  },
+  "lora_plus_tiny_head": {
+    "file": "results/success_lora_tiny.json",
+    "checkpoint": "checkpoints/lora/lora_best.pt",
+    "gate": "min(w,h) <= 64 uses fc_tiny, else SID LoRA head",
+    "overall": {"acc": 0.989, "auc": 0.999, "fake_ok": 0.989, "real_ok": 0.990},
+    "sid_set": {"acc": 0.999, "auc": 1.0, "fake_ok": 1.0, "real_ok": 0.998},
+    "cifake": {"acc": 0.973, "auc": 0.997, "fake_ok": 0.970, "real_ok": 0.977}
+  }
+}

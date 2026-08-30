@@ -91,15 +91,21 @@ def count_loaded_params(model) -> dict:
         if hasattr(backbone, "transformer"):
             text = _module_param_count(backbone.transformer)
     head = _module_param_count(model.fc) if hasattr(model, "fc") else registered
-    # Image-path inference uses the vision encoder + linear head.
-    inference_total = (vision if vision else backbone_total) + head
-    grand_total = backbone_total + head if backbone_total else registered
+    tiny = (
+        _module_param_count(model.fc_tiny)
+        if isinstance(getattr(model, "fc_tiny", None), torch.nn.Module)
+        else 0
+    )
+    # Image-path inference uses the vision encoder + linear head(s).
+    inference_total = (vision if vision else backbone_total) + head + tiny
+    grand_total = backbone_total + head + tiny if backbone_total else registered
     return {
         "registered_nn_module": registered,
         "clip_full_backbone": backbone_total,
         "clip_vision_encoder": vision,
         "clip_text_encoder": text,
         "classifier_head": head,
+        "tiny_image_head": tiny,
         "inference_vision_plus_head": inference_total,
         "loaded_module_total": grand_total,
         "under_2b": grand_total < 2_000_000_000,
@@ -135,6 +141,30 @@ def load_rgb(path: str) -> Image.Image:
         return im.convert("RGB").copy()
 
 
+def tiny_max_side(model) -> int:
+    if getattr(model, "fc_tiny", None) is None:
+        return 0
+    return int(getattr(model, "tiny_max_side", 0) or 0)
+
+
+def is_tiny_image(img: Image.Image, model) -> bool:
+    limit = tiny_max_side(model)
+    if limit <= 0:
+        return False
+    return min(img.size) <= limit
+
+
+def model_llr(model, x: torch.Tensor, tiny_mask: torch.Tensor | None = None) -> np.ndarray:
+    """Logits from the SID head, swapping in the tiny-image head when gated."""
+    feat = model.forward_features(x)
+    logits = model.fc(feat)
+    fc_tiny = getattr(model, "fc_tiny", None)
+    if fc_tiny is not None and tiny_mask is not None and bool(tiny_mask.any()):
+        logits = logits.clone()
+        logits[tiny_mask] = fc_tiny(feat[tiny_mask])
+    return _llr_from_output(logits.detach().cpu().numpy())
+
+
 @torch.no_grad()
 def score_images(
     paths: Iterable[str],
@@ -147,12 +177,14 @@ def score_images(
     rows: list[dict] = []
     batch_imgs: list[torch.Tensor] = []
     batch_paths: list[str] = []
+    batch_tiny: list[bool] = []
 
     def flush():
         if not batch_imgs:
             return
         x = torch.stack(batch_imgs, 0).to(device)
-        llr = _llr_from_output(model(x).cpu().numpy())
+        tiny_mask = torch.tensor(batch_tiny, dtype=torch.bool, device=device)
+        llr = model_llr(model, x, tiny_mask)
         for p, score in zip(batch_paths, llr):
             rows.append(
                 {
@@ -163,10 +195,13 @@ def score_images(
             )
         batch_imgs.clear()
         batch_paths.clear()
+        batch_tiny.clear()
 
     for path in path_list:
-        batch_imgs.append(transform(load_rgb(path)))
+        img = load_rgb(path)
+        batch_imgs.append(transform(img))
         batch_paths.append(path)
+        batch_tiny.append(is_tiny_image(img, model))
         if len(batch_imgs) >= batch_size:
             flush()
     flush()
@@ -185,8 +220,12 @@ def score_pil_images(
     llrs = []
     for i in range(0, len(images), batch_size):
         chunk = images[i : i + batch_size]
-        x = torch.stack([transform(im.convert("RGB")) for im in chunk], 0).to(device)
-        llrs.append(_llr_from_output(model(x).cpu().numpy()))
+        rgb = [im.convert("RGB") for im in chunk]
+        x = torch.stack([transform(im) for im in rgb], 0).to(device)
+        tiny_mask = torch.tensor(
+            [is_tiny_image(im, model) for im in rgb], dtype=torch.bool, device=device
+        )
+        llrs.append(model_llr(model, x, tiny_mask))
     if not llrs:
         return np.array([], dtype=np.float32)
     return logit_to_confidence(np.concatenate(llrs, axis=0))
@@ -213,8 +252,10 @@ def score_images_repeated(
         preds: list[float] = []
         llrs: list[float] = []
         for _ in range(n_repeats):
-            x = transform(load_rgb(path)).unsqueeze(0).to(device)
-            llr = float(_llr_from_output(model(x).cpu().numpy())[0])
+            img = load_rgb(path)
+            x = transform(img).unsqueeze(0).to(device)
+            tiny_mask = torch.tensor([is_tiny_image(img, model)], dtype=torch.bool, device=device)
+            llr = float(model_llr(model, x, tiny_mask)[0])
             llrs.append(llr)
             preds.append(float(logit_to_confidence(llr)))
         mean_pred = float(np.mean(preds))

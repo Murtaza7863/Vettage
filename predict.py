@@ -21,6 +21,7 @@ from detector import (
     list_images,
     load_detector,
     load_rgb,
+    score_images,
     score_images_repeated,
     score_pil_images,
 )
@@ -45,8 +46,18 @@ def parse_args():
         help="Weight folder under --weights_dir. Default: CLIP ViT-L/14 detector.",
     )
     parser.add_argument("--device", default=None, help="cpu | mps | cuda. Auto-detected if omitted.")
-    parser.add_argument("--batch_size", type=int, default=8, help="Unused when --repeats > 0 (kept for CLI compat).")
-    parser.add_argument("--repeats", type=int, default=5, help="Independent forwards per image.")
+    parser.add_argument(
+        "--checkpoint",
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints", "lora", "lora_best.pt"),
+        help="LoRA checkpoint. Default: checkpoints/lora/lora_best.pt. Pass 'none' for the frozen baseline head.",
+    )
+    parser.add_argument("--batch_size", type=int, default=8, help="Batch size when --repeats 1.")
+    parser.add_argument(
+        "--repeats",
+        type=int,
+        default=1,
+        help="Forwards per image. Default 1 (deterministic). Use 5 to log per-file std.",
+    )
     parser.add_argument("--threshold", type=float, default=0.5, help="pred > threshold counts as synthetic.")
     parser.add_argument(
         "--probe_transforms",
@@ -170,6 +181,15 @@ def main():
         weights_dir=args.weights_dir,
         device=args.device,
     )
+    ckpt = args.checkpoint
+    if ckpt and str(ckpt).lower() not in {"none", "off", "baseline"}:
+        if os.path.isfile(ckpt):
+            from train_lora import load_finetuned
+
+            model = load_finetuned(model, ckpt, device)
+            print(f"loaded checkpoint {ckpt}")
+        else:
+            print(f"warning: checkpoint not found ({ckpt}); using baseline head")
     counts = count_loaded_params(model)
     print(f"arch={arch} device={device} images={len(paths)} repeats={args.repeats}")
     if args.log_params:
@@ -179,7 +199,16 @@ def main():
         print("ERROR: loaded module exceeds 2B parameters — disqualified.", file=sys.stderr)
         sys.exit(2)
 
-    rows = score_images_repeated(paths, model, transform, device, n_repeats=args.repeats)
+    if args.repeats == 1:
+        rows = score_images(paths, model, transform, device, batch_size=max(args.batch_size, 1))
+        for r in rows:
+            r["pred_std"] = 0.0
+            r["pred_min"] = r["pred"]
+            r["pred_max"] = r["pred"]
+            r["n_repeats"] = 1
+            r["repeats"] = [r["pred"]]
+    else:
+        rows = score_images_repeated(paths, model, transform, device, n_repeats=args.repeats)
     aggregate = aggregate_predictions(rows, threshold=args.threshold)
     print_repeat_table(rows, aggregate)
 
@@ -196,17 +225,19 @@ def main():
             for r in probe_rows
         ]
 
-    payload = []
+    # Required contract: only these two keys in the scored JSON.
+    payload = [{"image_path": r["image_path"], "pred": float(r["pred"])} for r in rows]
+    detail = []
     for r in rows:
-        payload.append(
+        detail.append(
             {
                 "image_path": r["image_path"],
-                "pred": r["pred"],
-                "pred_std": r["pred_std"],
-                "pred_min": r["pred_min"],
-                "pred_max": r["pred_max"],
-                "n_repeats": r["n_repeats"],
-                "repeats": r["repeats"],
+                "pred": float(r["pred"]),
+                "pred_std": float(r.get("pred_std") or 0.0),
+                "pred_min": float(r.get("pred_min", r["pred"])),
+                "pred_max": float(r.get("pred_max", r["pred"])),
+                "n_repeats": int(r.get("n_repeats") or 1),
+                "repeats": r.get("repeats") or [r["pred"]],
             }
         )
 
@@ -222,7 +253,7 @@ def main():
         agg_path = root + ".aggregate.json"
     os.makedirs(os.path.dirname(agg_path) or ".", exist_ok=True)
     with open(agg_path, "w") as f:
-        json.dump({"aggregate": aggregate, "predictions": payload}, f, indent=2)
+        json.dump({"aggregate": aggregate, "predictions": detail}, f, indent=2)
 
     print(f"wrote {len(payload)} predictions -> {out_path}")
     print(f"wrote aggregate -> {agg_path}")

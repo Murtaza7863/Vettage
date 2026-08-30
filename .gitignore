@@ -166,7 +166,12 @@ data/processed/
 data/sid_set/
 data/cifake/
 data/wildfake/
-checkpoints/
+data/cache256/
+checkpoints/*
+!checkpoints/lora/
+checkpoints/lora/*
+!checkpoints/lora/lora_best.pt
+!checkpoints/lora/train_history.json
 runs/
 .cache/
 hf_cache/
@@ -177,4 +182,5 @@ results/error_examples/
 test_images/
 *.pt
 !weights/**/*.pth
+!checkpoints/lora/lora_best.pt
 

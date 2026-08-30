@@ -53,6 +53,9 @@ class OpenClipLinear(nn.Module):
         
         self.bb = [backbone, ]
         self.normalize = normalize
+        # When True, CLIP visual (LoRA adapters) participates in the backward pass.
+        # Default False preserves the original frozen-feature detector.
+        self.tune_visual = False
         
         self.fc = ChannelLinear(self.num_features, num_classes)
         torch.nn.init.normal_(self.fc.weight.data, 0.0, 0.02)
@@ -63,9 +66,12 @@ class OpenClipLinear(nn.Module):
         return self
 
     def forward_features(self, x):
+        backbone = self.bb[0]
+        if self.tune_visual and self.training:
+            return backbone.encode_image(x, normalize=self.normalize)
         with torch.no_grad():
-            self.bb[0].eval()
-            features = self.bb[0].encode_image(x, normalize=self.normalize)
+            backbone.eval()
+            features = backbone.encode_image(x, normalize=self.normalize)
         return features
 
     def forward_head(self, x):

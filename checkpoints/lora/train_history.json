@@ -1,0 +1,28 @@
+{
+  "note": "Stopped after epoch 2: cached SID val AUC already ~1.0. Native-res eval is the real test.",
+  "lora": {
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "target_modules": ["c_fc", "c_proj"]
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.14856841770482102,
+      "val_loss": 0.010639817879015027,
+      "val_acc": 0.998,
+      "val_auc": 0.999988,
+      "val_auc_sid_set": 0.999988,
+      "sec": 1054.0445852279663
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.010685499633630873,
+      "val_loss": 0.0020003620351635616,
+      "val_acc": 0.999,
+      "val_auc": 0.999996,
+      "val_auc_sid_set": 0.999996,
+      "sec": 1061.8148353099823
+    }
+  ]
+}
