@@ -1,0 +1,20 @@
+{
+  "note": "Stopped mid epoch 2 (aborted at 2507/2800). Epoch 1 is the reported gen-v2 checkpoint.",
+  "lora": {
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "target_modules": ["c_fc", "c_proj"],
+    "init_checkpoint": "checkpoints/gen_v2/baseline_from_main.pt"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.37660232356241086,
+      "val_loss": 0.042086431327345054,
+      "val_acc": 0.982,
+      "val_auc": 0.999996,
+      "val_auc_sid_set": 0.999996,
+      "sec": 2820.4854559898376
+    }
+  ]
+}

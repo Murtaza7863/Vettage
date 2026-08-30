@@ -1,0 +1,20 @@
+{
+  "decision": "do_not_promote",
+  "reason": "In-family SID real_ok dropped (0.998 -> 0.978). Unseen-generator AUC ticked up (0.967 -> 0.975) but threshold-0.5 collapsed: Midjourney fake-catch 1.00 while LAION reals scored as fake (real_ok 0.15). Keep main as the submission.",
+  "train": {
+    "planned_epochs": 3,
+    "completed_epochs": 1,
+    "aborted": "killed at epoch 2 step 2507/2800",
+    "init": "checkpoints/gen_v2/baseline_from_main.pt",
+    "hold_out": "Midjourney (mjv5) — never in train",
+    "train_data": "SID_Set + CIFAKE + WildFake DDIM/DDPM fakes + CelebA-HQ/AFHQ reals (sampled). Never DALLE.zip / coco.zip / eval-subset."
+  },
+  "in_family_val_n1600": {
+    "main": {"sid_auc": 1.0, "sid_acc": 0.999, "sid_real_ok": 0.998, "sid_fake_ok": 1.0, "cifake_auc": 0.997, "overall_acc": 0.989},
+    "gen_v2": {"sid_auc": 1.0, "sid_acc": 0.989, "sid_real_ok": 0.978, "sid_fake_ok": 1.0, "cifake_auc": 0.998, "overall_acc": 0.985}
+  },
+  "unseen_midjourney_vs_laion_n1998": {
+    "main": {"auc": 0.967, "acc": 0.908, "fake_ok": 0.873, "real_ok": 0.943},
+    "gen_v2": {"auc": 0.975, "acc": 0.576, "fake_ok": 1.0, "real_ok": 0.151}
+  }
+}

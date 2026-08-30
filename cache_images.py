@@ -52,13 +52,20 @@ def build(index_csv: str, out_csv: str, cache_root: str, short_side: int, qualit
         tasks.append((s.path, dest, short_side, quality))
 
     done = 0
-    with ProcessPoolExecutor(max_workers=workers) as ex:
-        futs = [ex.submit(_resize_one, t) for t in tasks]
-        for f in as_completed(futs):
-            if f.result():
+    if workers <= 1:
+        for t in tasks:
+            if _resize_one(t):
                 done += 1
-            if done % 2000 == 0:
-                print(f"  cached {done}/{len(tasks)}", flush=True)
+                if done % 2000 == 0:
+                    print(f"  cached {done}/{len(tasks)}", flush=True)
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as ex:
+            futs = [ex.submit(_resize_one, t) for t in tasks]
+            for f in as_completed(futs):
+                if f.result():
+                    done += 1
+                    if done % 2000 == 0:
+                        print(f"  cached {done}/{len(tasks)}", flush=True)
 
     out: list[Sample] = []
     for s in samples:

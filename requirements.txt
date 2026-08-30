@@ -9,6 +9,7 @@ timm>=0.9.10
 huggingface-hub>=0.23.0
 open_clip_torch
 datasets
+requests
 peft
 matplotlib
 kagglehub

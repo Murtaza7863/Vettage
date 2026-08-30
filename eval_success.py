@@ -25,6 +25,28 @@ from detector import load_detector, score_images
 
 
 def metrics(y: np.ndarray, scores: np.ndarray, threshold: float) -> dict:
+    y = np.asarray(y)
+    scores = np.asarray(scores)
+    if len(y) == 0:
+        nan = float("nan")
+        return {
+            "n": 0,
+            "n_real": 0,
+            "n_fake": 0,
+            "accuracy": nan,
+            "precision_fake": nan,
+            "recall_fake": nan,
+            "f1_fake": nan,
+            "auc": nan,
+            "true_real": 0,
+            "false_fake": 0,
+            "false_real": 0,
+            "true_fake": 0,
+            "real_success": nan,
+            "fake_success": nan,
+            "mean_pred_real": nan,
+            "mean_pred_fake": nan,
+        }
     pred = (scores > threshold).astype(int)
     tn, fp, fn, tp = confusion_matrix(y, pred, labels=[0, 1]).ravel()
     return {

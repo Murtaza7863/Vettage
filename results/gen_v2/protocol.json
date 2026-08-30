@@ -1,0 +1,30 @@
+{
+  "hold_out_family": "Midjourney (mjv5)",
+  "hold_out_eval": "techjam-aigc/wildfake-eval-subset:cross_generator midjourney_v5 vs laion5b reals",
+  "never_train": [
+    "midjourney",
+    "DALLE Advanced / DALLE.zip",
+    "COCO val2017 / coco.zip",
+    "eval-subset images"
+  ],
+  "train_wildfake": [
+    "DDIM.zip",
+    "DDPM.zip",
+    "celebahq.zip",
+    "afhq.zip"
+  ],
+  "n_train": 22397,
+  "n_holdout": 1998,
+  "counts": {
+    "cifake:0": 2700,
+    "cifake:1": 2697,
+    "sid_set:0": 4500,
+    "sid_set:1": 4500,
+    "wildfake_afhq:0": 1500,
+    "wildfake_celebahq:0": 1500,
+    "wildfake_ddim:1": 2500,
+    "wildfake_ddpm:1": 2500
+  },
+  "checkpoint_dir": "checkpoints/gen_v2",
+  "init": "checkpoints/lora/lora_best.pt (frozen copy at checkpoints/gen_v2/baseline_from_main.pt)"
+}

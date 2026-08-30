@@ -172,6 +172,10 @@ checkpoints/*
 checkpoints/lora/*
 !checkpoints/lora/lora_best.pt
 !checkpoints/lora/train_history.json
+!checkpoints/gen_v2/
+checkpoints/gen_v2/*
+!checkpoints/gen_v2/lora_best.pt
+!checkpoints/gen_v2/train_history.json
 runs/
 .cache/
 hf_cache/
@@ -183,4 +187,5 @@ test_images/
 *.pt
 !weights/**/*.pth
 !checkpoints/lora/lora_best.pt
+!checkpoints/gen_v2/lora_best.pt
 

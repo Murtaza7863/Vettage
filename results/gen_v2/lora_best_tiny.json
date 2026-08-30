@@ -1,0 +1,27 @@
+{
+  "lora_params": 3932160,
+  "head_params": 1025,
+  "trainable_total": 3933185,
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "target_modules": [
+    "c_fc",
+    "c_proj"
+  ],
+  "init_checkpoint": "checkpoints/gen_v2/baseline_from_main.pt",
+  "epoch": 1,
+  "train_loss": 0.37660232356241086,
+  "val_loss": 0.042086431327345054,
+  "val_acc": 0.982,
+  "val_auc": 0.999996,
+  "val_auc_sid_set": 0.999996,
+  "val_auc_cifake": NaN,
+  "lr": 2.5289108571258715e-05,
+  "sec": 2820.4854559898376,
+  "tiny_max_side": 64,
+  "tiny_source": "cifake",
+  "tiny_val_auc": 0.9983222222222222,
+  "tiny_val_acc": 0.9783333333333334,
+  "tiny_C": 10.0,
+  "tiny_n_train": 10794
+}

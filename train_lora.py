@@ -182,12 +182,43 @@ def load_finetuned(model, path: str, device) -> torch.nn.Module:
     return model
 
 
+def _reject_main_checkpoint_dir(out_dir: str) -> None:
+    """generalization-v2 must never overwrite the shipped main LoRA."""
+    abs_out = os.path.abspath(out_dir)
+    forbidden = os.path.abspath(os.path.join(os.path.dirname(__file__), "checkpoints", "lora"))
+    if abs_out == forbidden or os.path.abspath(os.path.join(abs_out, "lora_best.pt")) == os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "checkpoints", "lora", "lora_best.pt")
+    ):
+        raise SystemExit(
+            f"refusing to write {out_dir!r} — that overwrites the main checkpoint. "
+            "Use --out_dir checkpoints/gen_v2"
+        )
+
+
 def train(args):
+    _reject_main_checkpoint_dir(args.out_dir)
     device = pick_device(args.device)
     _, model_path, arch, norm_type, patch_size = get_config(args.model, args.weights_dir)
     model = load_weights(create_architecture(arch), model_path)
-    lora_info = attach_lora(model, r=args.lora_r, alpha=args.lora_alpha)
-    model = model.to(device)
+    if args.init_checkpoint:
+        print(f"init from {args.init_checkpoint}", flush=True)
+        model = load_finetuned(model, args.init_checkpoint, device)
+        extra = torch.load(args.init_checkpoint, map_location="cpu", weights_only=False).get("extra") or {}
+        lora_info = {
+            "lora_params": extra.get("lora_params"),
+            "head_params": extra.get("head_params"),
+            "trainable_total": extra.get("trainable_total"),
+            "lora_r": extra.get("lora_r", args.lora_r),
+            "lora_alpha": extra.get("lora_alpha", args.lora_alpha),
+            "target_modules": extra.get("target_modules", list(LORA_TARGET_MODULES)),
+            "init_checkpoint": args.init_checkpoint,
+        }
+        if getattr(model, "fc_tiny", None) is not None:
+            for p in model.fc_tiny.parameters():
+                p.requires_grad = False
+    else:
+        lora_info = attach_lora(model, r=args.lora_r, alpha=args.lora_alpha)
+        model = model.to(device)
     model.train()
     model.tune_visual = True
 
@@ -273,6 +304,8 @@ def train(args):
         }
         history.append(rec)
         print(json.dumps(rec), flush=True)
+        epoch_path = os.path.join(args.out_dir, f"lora_epoch{epoch+1}.pt")
+        save_finetuned(model, epoch_path, extra={**lora_info, **rec})
         # Prefer SID_Set AUC when present — CIFAKE 32x32 inverts CLIP and
         # would make us keep a worse native-res detector.
         score = rec["val_auc_sid_set"]
@@ -297,7 +330,12 @@ def main():
     p.add_argument("--val_csv", default="data/processed/val_sid_cached.csv")
     p.add_argument("--model", default="clipdet_latent10k_plus")
     p.add_argument("--weights_dir", default="./weights")
-    p.add_argument("--out_dir", default="checkpoints/lora")
+    p.add_argument("--out_dir", default="checkpoints/gen_v2")
+    p.add_argument(
+        "--init_checkpoint",
+        default=None,
+        help="Continue from an existing LoRA (does not overwrite it; writes to --out_dir).",
+    )
     p.add_argument("--device", default=None)
     p.add_argument("--epochs", type=int, default=4)
     p.add_argument("--batch_size", type=int, default=8)
