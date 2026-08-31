@@ -1,28 +1,121 @@
 {
-  "note": "Stopped after epoch 2: cached SID val AUC already ~1.0. Native-res eval is the real test.",
   "lora": {
-    "lora_r": 16,
-    "lora_alpha": 32,
-    "target_modules": ["c_fc", "c_proj"]
+    "lora_params": 7864320,
+    "head_params": 1025,
+    "trainable_total": 7865345,
+    "lora_r": 32,
+    "lora_alpha": 64,
+    "target_modules": [
+      "c_fc",
+      "c_proj"
+    ]
   },
   "history": [
     {
       "epoch": 1,
-      "train_loss": 0.14856841770482102,
-      "val_loss": 0.010639817879015027,
-      "val_acc": 0.998,
-      "val_auc": 0.999988,
-      "val_auc_sid_set": 0.999988,
-      "sec": 1054.0445852279663
+      "train_loss": 0.08353277159755115,
+      "val_loss": 0.05470993827024366,
+      "val_acc": 0.9807204464738711,
+      "val_auc": 0.9986928104575166,
+      "val_auc_sid_set": 1.0,
+      "val_auc_cifake": 0.9992857142857143,
+      "lr": 4.9904438713466924e-05,
+      "sec": 5898.020440816879
     },
     {
       "epoch": 2,
-      "train_loss": 0.010685499633630873,
-      "val_loss": 0.0020003620351635616,
-      "val_acc": 0.999,
-      "val_auc": 0.999996,
-      "val_auc_sid_set": 0.999996,
-      "sec": 1061.8148353099823
+      "train_loss": 0.05528216343485004,
+      "val_loss": 0.05244907044181686,
+      "val_acc": 0.9837645865043125,
+      "val_auc": 0.9986699865131238,
+      "val_auc_sid_set": 0.99985,
+      "val_auc_cifake": 0.999141604010025,
+      "lr": 4.6648189041544474e-05,
+      "sec": 1752.510166168213
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.04429627347065441,
+      "val_loss": 0.04175931270628477,
+      "val_acc": 0.9837645865043125,
+      "val_auc": 0.9992042743023135,
+      "val_auc_sid_set": 1.0,
+      "val_auc_cifake": 0.9995488721804511,
+      "lr": 3.9335424632162124e-05,
+      "sec": 1797.577304840088
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.028765146448798233,
+      "val_loss": 0.06496596656988092,
+      "val_acc": 0.9822425164890918,
+      "val_auc": 0.9986793235812843,
+      "val_auc_sid_set": 0.998925,
+      "val_auc_cifake": 0.9993734335839599,
+      "lr": 2.933644364610919e-05,
+      "sec": 1948.9386990070343
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.022384977479945736,
+      "val_loss": 0.0437557652434307,
+      "val_acc": 0.9857940131912735,
+      "val_auc": 0.9992255420686793,
+      "val_auc_sid_set": 0.999825,
+      "val_auc_cifake": 0.9996115288220551,
+      "lr": 1.8524899395309192e-05,
+      "sec": 1809.73508310318
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.01518247405378414,
+      "val_loss": 0.05260327639103434,
+      "val_acc": 0.9857940131912735,
+      "val_auc": 0.9986839921153646,
+      "val_auc_sid_set": 0.9969125,
+      "val_auc_cifake": 0.9997055137844612,
+      "lr": 8.926706892579403e-06,
+      "sec": 5205.463381052017
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.013402831753546727,
+      "val_loss": 0.05818474510590482,
+      "val_acc": 0.9863013698630136,
+      "val_auc": 0.9985454922709825,
+      "val_auc_sid_set": 0.9964,
+      "val_auc_cifake": 0.9997180451127821,
+      "lr": 2.3404179299778015e-06,
+      "sec": 1768.8048350811005
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.010455848488950039,
+      "val_loss": 0.05468095533829917,
+      "val_acc": 0.9857940131912735,
+      "val_auc": 0.9985335615727773,
+      "val_auc_sid_set": 0.996375,
+      "val_auc_cifake": 0.9997055137844612,
+      "lr": 2.0048374884609638e-10,
+      "sec": 2043.2505559921265
     }
-  ]
+  ],
+  "args": {
+    "train_csv": "data/processed/train.csv",
+    "val_csv": "data/processed/val.csv",
+    "model": "clipdet_latent10k_plus",
+    "weights_dir": "./weights",
+    "out_dir": "checkpoints/lora",
+    "device": "mps",
+    "epochs": 8,
+    "batch_size": 8,
+    "lr": 5e-05,
+    "wd": 0.05,
+    "lora_r": 32,
+    "lora_alpha": 64,
+    "degrade_p": 0.7,
+    "pos_weight": 2.0,
+    "num_workers": 0,
+    "resume": "checkpoints/lora/new_weights.pt"
+  }
 }

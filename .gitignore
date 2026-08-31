@@ -184,3 +184,8 @@ test_images/
 !weights/**/*.pth
 !checkpoints/lora/lora_best.pt
 
+eval_images/
+wildfake/
+synthbuster/
+*.jpg
+*.png
