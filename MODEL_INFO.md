@@ -1,10 +1,8 @@
 # MODEL_INFO
 
-Copy-paste ready inventory for the Devpost written description. Parameter counts measured by loading the CLIP backbone + classifier head (`python count_params.py`) and the LoRA payload in `checkpoints/lora/lora_best.pt`.
-
 ## Constraint
 
-**Total loaded parameters must be < 2,000,000,000.**
+
 
 | Component | Parameters | Notes |
 |---|---|---|
@@ -56,11 +54,3 @@ Trainable at fine-tune time: **3,933,185** (LoRA + head). CLIP base weights stay
 ```
 
 `pred` is `sigmoid(LLR)` in `[0, 1]`. Values **> 0.5** mean synthetic (LoRA operating point). Pass `--checkpoint none` to restore the frozen baseline head.
-
-## Held-out results (native-res val, threshold 0.5)
-
-| Split | n | Baseline | LoRA SID only | LoRA + tiny head |
-|---|---|---|---|---|
-| SID_Set | 1000 | 0.859 / 61.7% / 26.2% | **1.000 / 99.9% / 100%** | **1.000 / 99.9% / 100%** |
-| CIFAKE | 600 | 0.315 / 37.8% / 19.7% | 0.656 / 57.2% / 21.0% | **0.997 / 97.3% / 97.0%** |
-| Overall | 1600 | 0.666 / 52.7% / 23.8% | 0.949 / 83.9% / 70.4% | **0.999 / 98.9% / 98.9%** |

@@ -34,6 +34,7 @@ SID_HF = "saberzl/SID_Set"
 CIFAKE_HF = "dragonintelligence/CIFAKE-image-dataset"
 # Original Kaggle source (requires kaggle.json). Same pixels as CIFAKE_HF.
 CIFAKE_KAGGLE = "birdy654/cifake-real-and-ai-generated-synthetic-images"
+DEFACTIFY_HF = "Rajarshi-Roy-research/Defactify_Image_Dataset"
 
 
 @dataclass
@@ -148,6 +149,93 @@ def download_cifake(
     return samples
 
 
+def download_defactify(
+    out_dir: str,
+    max_real: int = 3000,
+    max_fake: int = 3000,
+    seed: int = 42,
+    split: str = "train",
+) -> list[Sample]:
+    """Download Defactify dataset: SD2.1, SDXL, SD3, DALL-E 3, Midjourney v6 + COCO real."""
+    from datasets import load_dataset
+
+    rng = random.Random(seed)
+    print(f"loading {DEFACTIFY_HF} split={split}", flush=True)
+    ds = load_dataset(DEFACTIFY_HF, split=split)
+
+    # Label_A: 0=real, 1=fake
+    # Label_B: 0=real, 1=SD21, 2=SDXL, 3=SD3, 4=DALLE3, 5=Midjourney
+    gen_names = {0: "real", 1: "sd21", 2: "sdxl", 3: "sd3", 4: "dalle3", 5: "midjourney"}
+
+    buckets: dict[int, list[int]] = {0: [], 1: []}
+    for i, row in enumerate(ds):
+        buckets[int(row["Label_A"])].append(i)
+    rng.shuffle(buckets[0])
+    rng.shuffle(buckets[1])
+    pick_real = buckets[0][:max_real]
+    pick_fake = buckets[1][:max_fake]
+
+    samples: list[Sample] = []
+    for i in pick_real + pick_fake:
+        row = ds[int(i)]
+        binary = int(row["Label_A"])  # 0=real, 1=fake
+        gen = gen_names.get(int(row["Label_B"]), "unknown")
+        img = row["Image"]
+        if not isinstance(img, Image.Image):
+            img = img.convert("RGB") if hasattr(img, "convert") else Image.fromarray(img)
+        img_id = f"defactify_{gen}_{i:06d}"
+        split_name = "real" if binary == 0 else "fake"
+        dest = os.path.join(out_dir, "defactify", split_name, f"{img_id}.jpg")
+        _save_image(img, dest)
+        with open(dest, "rb") as f:
+            digest = sha1_bytes(f.read())
+        samples.append(
+            Sample(path=dest, label=binary, source="defactify", image_id=img_id, sha1=digest)
+        )
+    print(f"Defactify done real={len(pick_real)} fake={len(pick_fake)}", flush=True)
+    return samples
+
+
+def download_synthwildx(
+    out_dir: str,
+    synthwildx_dir: str = "data/synthwildx",
+) -> list[Sample]:
+    """Load SynthWildX images (DALL-E 3, Midjourney, Firefly from Twitter/X).
+    
+    These are all fake — no real images in this set.
+    Run data/synthwildx/download_synthwildx.py first to fetch the images.
+    """
+    import pandas as pd
+
+    csv_path = os.path.join(synthwildx_dir, "list.csv")
+    if not os.path.exists(csv_path):
+        print(f"SynthWildX list.csv not found at {csv_path}, skipping")
+        return []
+
+    tab = pd.read_csv(csv_path)
+    samples: list[Sample] = []
+    missing = 0
+    for _, row in tab.iterrows():
+        fpath = os.path.join(synthwildx_dir, row["filename"])
+        if not os.path.isfile(fpath):
+            missing += 1
+            continue
+        img_id = f"synthwildx_{row['typ']}_{os.path.splitext(os.path.basename(fpath))[0]}"
+        # Copy to out_dir structure
+        dest = os.path.join(out_dir, "synthwildx", "fake", os.path.basename(fpath))
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        if not os.path.exists(dest):
+            import shutil
+            shutil.copy2(fpath, dest)
+        with open(dest, "rb") as f:
+            digest = sha1_bytes(f.read())
+        samples.append(
+            Sample(path=dest, label=1, source="synthwildx", image_id=img_id, sha1=digest)
+        )
+    print(f"SynthWildX done fake={len(samples)} (missing={missing})", flush=True)
+    return samples
+
+
 def dedup(samples: list[Sample]) -> list[Sample]:
     seen_hash: set[str] = set()
     seen_id: set[tuple[str, str]] = set()
@@ -236,10 +324,14 @@ def build_pipeline(
     sid_fake: int = 2000,
     cifake_real: int = 4000,
     cifake_fake: int = 4000,
+    defactify_real: int = 3000,
+    defactify_fake: int = 3000,
     val_frac: float = 0.1,
     seed: int = 42,
     skip_sid: bool = False,
     skip_cifake: bool = False,
+    skip_defactify: bool = False,
+    skip_synthwildx: bool = False,
 ) -> dict:
     os.makedirs(out_dir, exist_ok=True)
     samples: list[Sample] = []
@@ -250,6 +342,14 @@ def build_pipeline(
     if not skip_cifake:
         samples.extend(
             download_cifake(out_dir, max_real=cifake_real, max_fake=cifake_fake, seed=seed)
+        )
+    if not skip_defactify:
+        samples.extend(
+            download_defactify(out_dir, max_real=defactify_real, max_fake=defactify_fake, seed=seed)
+        )
+    if not skip_synthwildx:
+        samples.extend(
+            download_synthwildx(out_dir)
         )
     samples = dedup(samples)
     train, val = stratified_split(samples, val_frac=val_frac, seed=seed)
@@ -288,6 +388,10 @@ def main():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--skip_sid", action="store_true")
     p.add_argument("--skip_cifake", action="store_true")
+    p.add_argument("--defactify_real", type=int, default=3000)
+    p.add_argument("--defactify_fake", type=int, default=3000)
+    p.add_argument("--skip_defactify", action="store_true")
+    p.add_argument("--skip_synthwildx", action="store_true")
     args = p.parse_args()
     build_pipeline(
         out_dir=args.out_dir,
@@ -295,10 +399,14 @@ def main():
         sid_fake=args.sid_fake,
         cifake_real=args.cifake_real,
         cifake_fake=args.cifake_fake,
+        defactify_real=args.defactify_real,
+        defactify_fake=args.defactify_fake,
         val_frac=args.val_frac,
         seed=args.seed,
         skip_sid=args.skip_sid,
         skip_cifake=args.skip_cifake,
+        skip_defactify=args.skip_defactify,
+        skip_synthwildx=args.skip_synthwildx,
     )
 
 

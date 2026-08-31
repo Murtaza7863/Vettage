@@ -91,7 +91,7 @@ def print_repeat_table(rows: list[dict], aggregate: dict) -> None:
         reps = r.get("repeats") or [r["pred"]]
         for v in reps:
             line += f"  {v:8.5f}"
-        call = "synthetic" if r["pred"] > aggregate["threshold"] else "real"
+        call = "AI-generated" if r["pred"] > aggregate["threshold"] else "real"
         line += f"  {r['pred']:8.5f}  {r.get('pred_std', 0.0):8.5g}  {r.get('pred_range', 0.0):8.5g}  {call}"
         print(line)
     print("-" * len(hdr))

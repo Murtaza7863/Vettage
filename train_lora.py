@@ -187,6 +187,16 @@ def train(args):
     _, model_path, arch, norm_type, patch_size = get_config(args.model, args.weights_dir)
     model = load_weights(create_architecture(arch), model_path)
     lora_info = attach_lora(model, r=args.lora_r, alpha=args.lora_alpha)
+
+    if args.resume:
+        print(f"resuming from {args.resume}", flush=True)
+        ckpt = torch.load(args.resume, map_location="cpu", weights_only=False)
+        model.fc.load_state_dict(ckpt["fc"])
+        set_peft_model_state_dict(model.bb[0].visual, ckpt["lora"])
+        if ckpt.get("fc_tiny") is not None:
+            attach_tiny_head(model)
+            model.fc_tiny.load_state_dict(ckpt["fc_tiny"])
+
     model = model.to(device)
     model.train()
     model.tune_visual = True
@@ -299,15 +309,16 @@ def main():
     p.add_argument("--weights_dir", default="./weights")
     p.add_argument("--out_dir", default="checkpoints/lora")
     p.add_argument("--device", default=None)
-    p.add_argument("--epochs", type=int, default=4)
+    p.add_argument("--epochs", type=int, default=8)
     p.add_argument("--batch_size", type=int, default=8)
-    p.add_argument("--lr", type=float, default=1e-4)
-    p.add_argument("--wd", type=float, default=0.01)
-    p.add_argument("--lora_r", type=int, default=16)
-    p.add_argument("--lora_alpha", type=int, default=32)
-    p.add_argument("--degrade_p", type=float, default=0.6)
+    p.add_argument("--lr", type=float, default=5e-5)
+    p.add_argument("--wd", type=float, default=0.05)
+    p.add_argument("--lora_r", type=int, default=32)
+    p.add_argument("--lora_alpha", type=int, default=64)
+    p.add_argument("--degrade_p", type=float, default=0.7)
     p.add_argument("--pos_weight", type=float, default=2.0, help="BCE weight on the fake class.")
     p.add_argument("--num_workers", type=int, default=0, help="0 avoids MPS dataloader hangs.")
+    p.add_argument("--resume", type=str, default=None, help="Path to a LoRA checkpoint to resume from.")
     args = p.parse_args()
     train(args)
 
